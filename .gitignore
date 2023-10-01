@@ -647,5 +647,4 @@ $RECYCLE.BIN/
 *.lnk
 
 *.idea
-*.config
 # End of https://www.toptal.com/developers/gitignore/api/csharp,macos,jetbrains,rider,monodevelop,windows,linux,dotnetcore
