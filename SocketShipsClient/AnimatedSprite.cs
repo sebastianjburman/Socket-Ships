@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace SocketShipsClient;
 
-public abstract class AnimatedSprite
+public abstract class AnimatedSprite:ISprite
 {
     protected Texture2D _SpriteTexture;
     protected Vector2 _SpritePosition;
