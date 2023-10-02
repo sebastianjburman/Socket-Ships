@@ -4,16 +4,18 @@ using Microsoft.Xna.Framework.Input;
 
 namespace SocketShipsClient;
 
-public class Game1 : Game
+public class SocketShips : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private SpriteManager _spriteManager;
 
-    public Game1()
+    public SocketShips()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        _spriteManager = SpriteManager.GetInstance();
     }
 
     protected override void Initialize()
@@ -26,16 +28,16 @@ public class Game1 : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-        // TODO: use this.Content to load your game content here
+        
+        _spriteManager.LoadContent(Content);
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-
-        // TODO: Add your update logic here
+        
+        _spriteManager.Update(gameTime,GraphicsDevice);
 
         base.Update(gameTime);
     }
@@ -43,8 +45,10 @@ public class Game1 : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        // TODO: Add your drawing code here
+        
+        _spriteBatch.Begin();
+        _spriteManager.Draw(_spriteBatch);
+        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

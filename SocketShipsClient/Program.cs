@@ -1,3 +1,3 @@
 ﻿
-using var game = new SocketShipsClient.Game1();
+using var game = new SocketShipsClient.SocketShips();
 game.Run();
