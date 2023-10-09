@@ -15,7 +15,7 @@ public class SocketShips : Game
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
-        _spriteManager = SpriteManager.GetInstance();
+        _spriteManager = SpriteManager.GetInstance(Content);
     }
 
     protected override void Initialize()
@@ -29,7 +29,7 @@ public class SocketShips : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         
-        _spriteManager.LoadContent(Content);
+        _spriteManager.LoadContent();
     }
 
     protected override void Update(GameTime gameTime)

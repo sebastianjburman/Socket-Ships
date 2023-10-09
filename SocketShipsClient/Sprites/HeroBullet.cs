@@ -5,7 +5,7 @@ namespace SocketShipsClient.Sprites;
 
 public class HeroBullet:Sprite
 {
-    private int speed = 300;
+    private int speed = 500;
     public HeroBullet(string spriteTextureFileName, Vector2 spritePosition) : base(spriteTextureFileName, spritePosition)
     {
     }

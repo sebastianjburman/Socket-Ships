@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -8,32 +8,30 @@ namespace SocketShipsClient;
     public class SpriteManager
     {
         private static SpriteManager _Instance;
-        private List<ISprite> _Sprites;
+        private ConcurrentBag<ISprite> _Sprites;
+        private ContentManager _ContentManager;
 
-        private SpriteManager()
+        private SpriteManager(ContentManager contentManager)
         {
-            _Sprites = new List<ISprite>();
-            //Add Sprites to list
+            this._ContentManager = contentManager;
+            _Sprites = new ConcurrentBag<ISprite>();
             SpaceShip spaceShiptest = new SpaceShip("HeroShip/Move", new Vector2(90, 300), .05, 6);
-            HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(200, 300));
             _Sprites.Add(spaceShiptest);
-            _Sprites.Add(heroBullet);
-
         }
 
-        public static SpriteManager GetInstance()
+        public static SpriteManager GetInstance(ContentManager contentManager)
         {
             if (_Instance == null)
             {
-                _Instance = new SpriteManager();
+                _Instance = new SpriteManager(contentManager);
             }
             return _Instance;
         }
-        public void LoadContent(ContentManager contentManager)
+        public void LoadContent()
         {
             foreach (ISprite sprite in _Sprites)
             {
-                sprite.LoadContent(contentManager);        
+                sprite.LoadContent(_ContentManager);        
             }
         }
         public void Update(GameTime gameTime, GraphicsDevice graphicsDevice)
@@ -49,5 +47,11 @@ namespace SocketShipsClient;
             {
                sprite.Draw(spriteBatch); 
             }
+        }
+
+        public void SpawnSprite(ISprite sprite)
+        {
+            sprite.LoadContent(_ContentManager);
+           _Sprites.Add(sprite); 
         }
     }
