@@ -26,8 +26,7 @@ public class SpaceShip:AnimatedSprite
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        Rectangle sourceRectangle = new Rectangle(_CurrentFrame * _FrameWidth, 0, _FrameWidth, _FrameHeight);
-        spriteBatch.Draw((_SpriteTexture), _SpritePosition, sourceRectangle, Color.White,0,new Vector2((_SpriteTexture.Width/this._FrameCount)/2,_SpriteTexture.Height/2),1,SpriteEffects.None,0);
+        spriteBatch.Draw((_SpriteTexture), _SpritePosition, this._Sprite, Color.White,0,new Vector2((_SpriteTexture.Width/this._FrameCount)/2,_SpriteTexture.Height/2),1,SpriteEffects.None,0);
     }
 
     private void FireBullet(GameTime gameTime)

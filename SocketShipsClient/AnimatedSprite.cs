@@ -7,6 +7,7 @@ namespace SocketShipsClient;
 public abstract class AnimatedSprite:ISprite
 {
     protected Texture2D _SpriteTexture;
+    protected Rectangle _Sprite;
     protected Vector2 _SpritePosition;
     protected string _SpriteTextureFileName;
     protected int _CurrentFrame;
@@ -29,6 +30,7 @@ public abstract class AnimatedSprite:ISprite
       this._SpriteTexture = cm.Load<Texture2D>(_SpriteTextureFileName);
       this._FrameWidth = this._SpriteTexture.Width / _FrameCount;
       this._FrameHeight = this._SpriteTexture.Height;
+      this._Sprite = new Rectangle(_CurrentFrame * _FrameWidth, 0, _FrameWidth, _FrameHeight);
    }
     protected void AnimateSprite(GameTime gameTime, GraphicsDevice gd)
     {
