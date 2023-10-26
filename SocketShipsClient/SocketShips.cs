@@ -20,7 +20,10 @@ public class SocketShips : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
+        _graphics.IsFullScreen = true;
+        _graphics.PreferredBackBufferWidth = 1500;
+        _graphics.PreferredBackBufferHeight = 1000;
+        _graphics.ApplyChanges();
 
         base.Initialize();
     }
@@ -28,7 +31,7 @@ public class SocketShips : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        
+
         _spriteManager.LoadContent();
     }
 
@@ -36,8 +39,8 @@ public class SocketShips : Game
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-        
-        _spriteManager.Update(gameTime,GraphicsDevice);
+
+        _spriteManager.Update(gameTime, GraphicsDevice);
 
         base.Update(gameTime);
     }
@@ -45,7 +48,7 @@ public class SocketShips : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
-        
+
         _spriteBatch.Begin();
         _spriteManager.Draw(_spriteBatch);
         _spriteBatch.End();
