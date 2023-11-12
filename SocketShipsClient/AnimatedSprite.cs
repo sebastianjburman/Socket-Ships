@@ -47,10 +47,20 @@ public abstract class AnimatedSprite:ISprite
             _TimeElapsed = 0;
         } 
     }
+
     public void SyncUp()
     {
-        string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X,_SpritePosition.Y));
+        string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
         SpriteSync.SendToServer(data);
+    }
+    public Vector2 GetPosition()
+    {
+        return this._SpritePosition;
+    }
+
+    public Guid GetGuid()
+    {
+        return this.SpriteId;
     }
     public abstract void Update(GameTime gameTime, GraphicsDevice gd);
     public abstract void Draw(SpriteBatch spriteBatch);

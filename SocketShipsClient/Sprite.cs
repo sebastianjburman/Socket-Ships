@@ -28,9 +28,17 @@ public abstract class Sprite:ISprite
    }
    public abstract void Update(GameTime gameTime, GraphicsDevice gd);
    public abstract void Draw(SpriteBatch spriteBatch);
+   public Vector2 GetPosition()
+   {
+      return this._SpritePosition;
+   }
+   public Guid GetGuid()
+   {
+      return this.SpriteId;
+   }
    public void SyncUp()
    {
-      string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X,_SpritePosition.Y));
+      string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
       SpriteSync.SendToServer(data);
    }
 }

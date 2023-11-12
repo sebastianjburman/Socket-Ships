@@ -54,6 +54,7 @@ public class SpaceShip : AnimatedSprite
                 }
                 HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(this._SpritePosition.X + 60, bulletYAxis));
                 SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(heroBullet);
+                heroBullet.SyncUp();
                 //Flip barrel
                 this.BulletSide = !BulletSide;
                 IsSpacePressed = false;
@@ -68,11 +69,15 @@ public class SpaceShip : AnimatedSprite
         if (keyboardState.IsKeyDown(Keys.Up) && (!(_SpritePosition.Y - (_SpriteTexture.Height / 3) <= gd.Viewport.Y)))
         {
             _SpritePosition.Y -= ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //Sync new position
+            SyncUp();
         }
         //If down key and not out of bound
         if (keyboardState.IsKeyDown(Keys.Down) && (_SpritePosition.Y <= gd.Viewport.Height - (_SpriteTexture.Height / 3)))
         {
             _SpritePosition.Y += ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //Sync new position
+            SyncUp();
         }
     }
 }
