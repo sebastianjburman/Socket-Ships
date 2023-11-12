@@ -9,4 +9,5 @@ public interface ISprite
     void LoadContent(ContentManager cm);
     void Update(GameTime gameTime, GraphicsDevice gd);
     void Draw(SpriteBatch spriteBatch);
+    void SyncUp();
 }

@@ -20,7 +20,7 @@ public class SocketShips : Game
 
     protected override void Initialize()
     {
-        _graphics.IsFullScreen = true;
+        _graphics.IsFullScreen = false;
         _graphics.PreferredBackBufferWidth = 1500;
         _graphics.PreferredBackBufferHeight = 1000;
         _graphics.ApplyChanges();

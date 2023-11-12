@@ -39,6 +39,7 @@ namespace SocketShipsClient;
             foreach (ISprite sprite in _Sprites)
             {
                 sprite.Update(gameTime,graphicsDevice);         
+                sprite.SyncUp();
             }
         }
         public void Draw(SpriteBatch spriteBatch)

@@ -1,6 +1,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using System;
+using System.Text.Json;
+using SocketShipsClient.Models;
 
 namespace SocketShipsClient;
 
@@ -16,6 +19,7 @@ public abstract class AnimatedSprite:ISprite
     protected double _FrameDuration;
     protected double _TimeElapsed;
     protected int _FrameCount;
+    protected Guid SpriteId;
 
     protected AnimatedSprite(string spriteTextureFileName, Vector2 spritePosition,double frameDuration, int frameCount)
     {
@@ -23,6 +27,7 @@ public abstract class AnimatedSprite:ISprite
         this._SpritePosition = spritePosition;
         _FrameDuration = frameDuration;
         _FrameCount = frameCount;
+        SpriteId = Guid.NewGuid();
     }
     
    public void LoadContent(ContentManager cm)
@@ -41,6 +46,11 @@ public abstract class AnimatedSprite:ISprite
             _CurrentFrame = (_CurrentFrame + 1) % (_SpriteTexture.Width / _FrameWidth);
             _TimeElapsed = 0;
         } 
+    }
+    public void SyncUp()
+    {
+        string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X,_SpritePosition.Y));
+        SpriteSync.SendToServer(data);
     }
     public abstract void Update(GameTime gameTime, GraphicsDevice gd);
     public abstract void Draw(SpriteBatch spriteBatch);
