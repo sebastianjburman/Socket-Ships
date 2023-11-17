@@ -21,13 +21,13 @@ public abstract class AnimatedSprite:ISprite
     protected int _FrameCount;
     protected Guid SpriteId;
 
-    protected AnimatedSprite(string spriteTextureFileName, Vector2 spritePosition,double frameDuration, int frameCount)
+    protected AnimatedSprite(string spriteTextureFileName, Vector2 spritePosition,double frameDuration, int frameCount,Guid spriteId)
     {
         this._SpriteTextureFileName = spriteTextureFileName;
         this._SpritePosition = spritePosition;
         _FrameDuration = frameDuration;
         _FrameCount = frameCount;
-        SpriteId = Guid.NewGuid();
+        this.SpriteId = spriteId;
     }
     
    public void LoadContent(ContentManager cm)
@@ -61,6 +61,10 @@ public abstract class AnimatedSprite:ISprite
     public Guid GetGuid()
     {
         return this.SpriteId;
+    }
+    public void SetPosition(Vector2 pos)
+    {
+        this._SpritePosition = pos;
     }
     public abstract void Update(GameTime gameTime, GraphicsDevice gd);
     public abstract void Draw(SpriteBatch spriteBatch);

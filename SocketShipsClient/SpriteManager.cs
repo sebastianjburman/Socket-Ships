@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using SocketShipsClient.Sprites;
+using SocketShipsClient.Models;
 
 namespace SocketShipsClient;
     public class SpriteManager
@@ -18,7 +19,7 @@ namespace SocketShipsClient;
         {
             this._ContentManager = contentManager;
             _Sprites = new ConcurrentDictionary<Guid, ISprite>();
-            SpaceShip spaceShiptest = new SpaceShip("HeroShip/Move", new Vector2(90, 300), .05, 6);
+            SpaceShip spaceShiptest = new SpaceShip("HeroShip/Move", new Vector2(90, 300), .05, 6,true,Guid.NewGuid());
             _Sprites.TryAdd(spaceShiptest.GetGuid(), spaceShiptest);
         }
 
@@ -38,7 +39,7 @@ namespace SocketShipsClient;
                 sprite.Value.LoadContent(_ContentManager);        
             }
         }
-        public void Update(GameTime gameTime, GraphicsDevice graphicsDevice)
+        public async void  Update(GameTime gameTime, GraphicsDevice graphicsDevice)
         {
             foreach (KeyValuePair<Guid,ISprite> sprite in _Sprites)
             {
@@ -54,6 +55,45 @@ namespace SocketShipsClient;
                 }
                 sprite.Value.Update(gameTime, graphicsDevice);
             }
+
+            try
+            {
+                //Update dictionary with sprite data coming down from the server
+                SpriteSyncModel newData = await SpriteSync.ReceiveFromServer();
+
+                //Update existing sprites
+                if (_Sprites.ContainsKey(newData.GUID))
+                {
+                    switch (newData.Type)
+                    {
+                        case "SpaceShip":
+                            _Sprites.TryGetValue(newData.GUID, out ISprite sprite);
+                            sprite.SetPosition(new Vector2(newData.X, newData.Y));
+                            break;
+                    }
+                }
+                //Create new sprites 
+                else
+                {
+                    switch (newData.Type)
+                    {
+                        case "SpaceShip":
+                            SpaceShip newShip = new SpaceShip("HeroShip/Move", new Vector2(newData.X, newData.Y), .05,
+                                6, false,newData.GUID);
+                            SpawnSprite(newShip);
+                            break;
+                        case "HeroBullet":
+                            HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(newData.X,newData.Y),newData.GUID);
+                            SpawnSprite(heroBullet);
+                            break; 
+                    }
+                }
+            }
+            catch
+            {
+                
+            }
+
         }
         public void Draw(SpriteBatch spriteBatch)
         {

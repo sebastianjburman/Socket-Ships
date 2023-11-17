@@ -1,6 +1,9 @@
 using System.Net.Sockets;
 using System.Text;
 using System;
+using SocketShipsClient.Models;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SocketShipsClient;
 
@@ -47,6 +50,15 @@ public static class SpriteSync
         {
             Console.WriteLine($"Error sending message: {ex.Message}");
         }
+    }
+    //This is asynchronous so this won't hold up the game
+    public static async Task<SpriteSyncModel> ReceiveFromServer()
+    {
+        byte[] buffer = new byte[1024];
+        int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+        string clientMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+        SpriteSyncModel data = JsonSerializer.Deserialize<SpriteSyncModel>(clientMessage);
+        return data;
     }
 
     public static void CloseAndDispose()

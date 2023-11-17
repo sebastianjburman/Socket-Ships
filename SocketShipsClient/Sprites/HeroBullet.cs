@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,7 +7,7 @@ namespace SocketShipsClient.Sprites;
 public class HeroBullet : Sprite
 {
     private int speed = 1000;
-    public HeroBullet(string spriteTextureFileName, Vector2 spritePosition) : base(spriteTextureFileName, spritePosition)
+    public HeroBullet(string spriteTextureFileName, Vector2 spritePosition,Guid spriteId) : base(spriteTextureFileName, spritePosition,spriteId)
     {
     }
 

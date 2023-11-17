@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.Design;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -13,15 +14,20 @@ public class SpaceShip : AnimatedSprite
     private float BulletSpawnTimeElapsed;
     private bool IsSpacePressed;
     private float ShipSpeed = 650;
-    public SpaceShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount)
+    private bool IsPlayer;
+    public SpaceShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
     {
+        this.IsPlayer = isPlayer;
     }
 
     public override void Update(GameTime gameTime, GraphicsDevice gd)
     {
         AnimateSprite(gameTime, gd);
-        FireBullet(gameTime);
-        MoveShip(gameTime, gd);
+        if(IsPlayer){
+            FireBullet(gameTime);
+            MoveShip(gameTime, gd);
+        }
+
     }
 
     public override void Draw(SpriteBatch spriteBatch)
@@ -52,7 +58,7 @@ public class SpaceShip : AnimatedSprite
                     //Shoot left barrel
                     bulletYAxis = this._SpritePosition.Y - 43;
                 }
-                HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(this._SpritePosition.X + 60, bulletYAxis));
+                HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(this._SpritePosition.X + 60, bulletYAxis),Guid.NewGuid());
                 SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(heroBullet);
                 heroBullet.SyncUp();
                 //Flip barrel

@@ -15,11 +15,11 @@ public abstract class Sprite:ISprite
    protected string _SpriteTextureFileName;
    protected Guid SpriteId;
    
-   protected Sprite(string spriteTextureFileName, Vector2 spritePosition)
+   protected Sprite(string spriteTextureFileName, Vector2 spritePosition, Guid spriteId)
    {
       _SpriteTextureFileName = spriteTextureFileName;
       _SpritePosition = spritePosition;
-      SpriteId = Guid.NewGuid();
+      SpriteId = spriteId;
    }
    public void LoadContent(ContentManager cm)
    {
@@ -40,5 +40,9 @@ public abstract class Sprite:ISprite
    {
       string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
       SpriteSync.SendToServer(data);
+   }
+   public void SetPosition(Vector2 pos)
+   {
+      this._SpritePosition = pos;
    }
 }
