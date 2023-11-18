@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -20,6 +19,8 @@ namespace SocketShipsClient;
             this._ContentManager = contentManager;
             _Sprites = new ConcurrentDictionary<Guid, ISprite>();
             SpaceShip spaceShiptest = new SpaceShip("HeroShip/Move", new Vector2(90, 300), .05, 6,true,Guid.NewGuid());
+            VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1450, 300), .05, 6,true,Guid.NewGuid());
+            _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
             _Sprites.TryAdd(spaceShiptest.GetGuid(), spaceShiptest);
         }
 
@@ -41,10 +42,11 @@ namespace SocketShipsClient;
         }
         public async void  Update(GameTime gameTime, GraphicsDevice graphicsDevice)
         {
+            //Call update for every sprite 
+            //If Sprite is not on the screen. If not then dispose of it
             foreach (KeyValuePair<Guid,ISprite> sprite in _Sprites)
             {
                 Vector2 spritePos = sprite.Value.GetPosition();
-                //If Sprite is not on the screen. If not then dispose of it
                 if (spritePos.X < 0 || spritePos.X > graphicsDevice.Viewport.Width || spritePos.Y < 0 || spritePos.Y > graphicsDevice.Viewport.Height)
                 {
                     bool removed = _Sprites.TryRemove(sprite.Key,out _);
@@ -53,7 +55,7 @@ namespace SocketShipsClient;
                         Console.WriteLine($"Item removed successfully.");
                     }
                 }
-                sprite.Value.Update(gameTime, graphicsDevice);
+                sprite.Value.Update(gameTime, graphicsDevice,this._Sprites);
             }
 
             try

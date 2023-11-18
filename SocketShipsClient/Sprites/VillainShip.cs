@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace SocketShipsClient.Sprites;
 
-public class SpaceShip : AnimatedSprite
+public class VillainShip : AnimatedSprite
 {
     private bool BulletSide;
     private float BulletSpawnDelay = .3f;
@@ -18,8 +18,7 @@ public class SpaceShip : AnimatedSprite
     private float ShipSpeed = 650;
     private bool IsPlayer;
     private Color _color;
-
-    public SpaceShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
+    public VillainShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
     {
         this.IsPlayer = isPlayer;
     }
@@ -57,15 +56,15 @@ public class SpaceShip : AnimatedSprite
             if (BulletSpawnTimeElapsed >= BulletSpawnDelay)
             {
                 //Shoot right Barrel
-                float bulletYAxis = this._SpritePosition.Y + 26;
+                float bulletYAxis = this._SpritePosition.Y + 5;
                 if (BulletSide)
                 {
                     //Shoot left barrel
-                    bulletYAxis = this._SpritePosition.Y - 26;
+                    bulletYAxis = this._SpritePosition.Y - 5;
                 }
-                HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(this._SpritePosition.X + 60, bulletYAxis),Guid.NewGuid());
-                SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(heroBullet);
-                heroBullet.SyncUp();
+                VillainBullet villainBullet = new VillainBullet("VillainShip/VillainBullet",new Vector2(this._SpritePosition.X - 80, bulletYAxis),Guid.NewGuid());
+                SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(villainBullet);
+                villainBullet.SyncUp();
                 //Flip barrel
                 this.BulletSide = !BulletSide;
                 IsSpacePressed = false;
@@ -91,21 +90,19 @@ public class SpaceShip : AnimatedSprite
             SyncUp();
         }
     }
-
     private void CheckForCollison(ConcurrentDictionary<Guid,ISprite> sprites)
     {
         _color = Color.White;
         foreach (KeyValuePair<Guid,ISprite> sprite in sprites)
         {
             string x = sprite.Value.GetType().Name;
-            if (sprite.Value.GetGuid()!=this.GetGuid() && x.Equals("VillainBullet"))
+            if (sprite.Value.GetGuid()!=this.GetGuid() && x.Equals("HeroBullet"))
             {
-                 bool intersects = this.GetSpritRectangle().Intersects(sprite.Value.GetSpritRectangle());
+                bool intersects = this.GetSpritRectangle().Intersects(sprite.Value.GetSpritRectangle());
                 if (intersects)
                 {
-                    _color = Color.Black;
+                    _color = Color.Brown;
                 }
-                
             }    
         }
     }

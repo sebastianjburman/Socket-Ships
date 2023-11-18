@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Text.Json;
 using SocketShipsClient.Models;
+using System.Collections.Concurrent;
 
 namespace SocketShipsClient;
 
@@ -66,6 +67,10 @@ public abstract class AnimatedSprite:ISprite
     {
         this._SpritePosition = pos;
     }
-    public abstract void Update(GameTime gameTime, GraphicsDevice gd);
+    public Rectangle GetSpritRectangle()
+    {
+        return new Rectangle((int)this._SpritePosition.X , (int)this._SpritePosition.Y - (this._Sprite.Height/2), this._Sprite.Width, this._Sprite.Height);
+    }
+    public abstract void Update(GameTime gameTime, GraphicsDevice gd, ConcurrentDictionary<Guid,ISprite> sprites);
     public abstract void Draw(SpriteBatch spriteBatch);
 }

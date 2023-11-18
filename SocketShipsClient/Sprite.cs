@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System.Text.Json;
 using SocketShipsClient.Models;
+using System.Collections.Concurrent;
 
 namespace SocketShipsClient;
 
@@ -26,7 +27,7 @@ public abstract class Sprite:ISprite
       this._SpriteTexture = cm.Load<Texture2D>(_SpriteTextureFileName);
       this._Sprite = new Rectangle((int)_SpritePosition.X, (int)_SpritePosition.Y, this._SpriteTexture.Width, this._SpriteTexture.Height);
    }
-   public abstract void Update(GameTime gameTime, GraphicsDevice gd);
+   public abstract void Update(GameTime gameTime, GraphicsDevice gd,ConcurrentDictionary<Guid,ISprite> sprites);
    public abstract void Draw(SpriteBatch spriteBatch);
    public Vector2 GetPosition()
    {
@@ -36,6 +37,12 @@ public abstract class Sprite:ISprite
    {
       return this.SpriteId;
    }
+
+   public Rectangle GetSpritRectangle()
+   {
+      return new Rectangle((int)this._SpritePosition.X, (int)this._SpritePosition.Y, this._Sprite.Width, this._Sprite.Height);
+   }
+
    public void SyncUp()
    {
       string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
