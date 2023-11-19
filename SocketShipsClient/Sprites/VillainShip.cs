@@ -18,6 +18,9 @@ public class VillainShip : AnimatedSprite
     private float ShipSpeed = 650;
     private bool IsPlayer;
     private Color _color;
+    private bool ShipHit;
+    private float ShipHitAnimationDelay = 3.1f;
+    private float ShipHitElapsed;
     public VillainShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
     {
         this.IsPlayer = isPlayer;
@@ -25,18 +28,30 @@ public class VillainShip : AnimatedSprite
 
     public override void Update(GameTime gameTime, GraphicsDevice gd,ConcurrentDictionary<Guid,ISprite> sprites)
     {
-        AnimateSprite(gameTime, gd);
-        if(IsPlayer){
-            FireBullet(gameTime);
-            MoveShip(gameTime, gd);
+        if (!ShipHit)
+        {
+            AnimateSprite(gameTime, gd);
+            if (IsPlayer)
+            {
+                FireBullet(gameTime);
+                MoveShip(gameTime, gd);
+            }
         }
+
+        CheckIfHitAnimationIsDone(gameTime);
         CheckForCollison(sprites);
 
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        spriteBatch.Draw((_SpriteTexture), _SpritePosition, this._Sprite, _color, 0, new Vector2((_SpriteTexture.Width / this._FrameCount) / 2, _SpriteTexture.Height / 2), 1, SpriteEffects.None, 0);
+        if (!ShipHit)
+        {
+            this._Sprite = new Rectangle(_CurrentFrame * _FrameWidth, 0, _FrameWidth, _FrameHeight);
+            spriteBatch.Draw((_SpriteTexture), _SpritePosition, this._Sprite, _color, 0,
+                new Vector2((_SpriteTexture.Width / this._FrameCount) / 2, _SpriteTexture.Height / 2), 1,
+                SpriteEffects.None, 0);
+        }
     }
 
     private void FireBullet(GameTime gameTime)
@@ -92,18 +107,40 @@ public class VillainShip : AnimatedSprite
     }
     private void CheckForCollison(ConcurrentDictionary<Guid,ISprite> sprites)
     {
-        _color = Color.White;
-        foreach (KeyValuePair<Guid,ISprite> sprite in sprites)
+        if (!ShipHit)
         {
-            string x = sprite.Value.GetType().Name;
-            if (sprite.Value.GetGuid()!=this.GetGuid() && x.Equals("HeroBullet"))
+            _color = Color.White;
+            foreach (KeyValuePair<Guid, ISprite> sprite in sprites)
             {
-                bool intersects = this.GetSpritRectangle().Intersects(sprite.Value.GetSpritRectangle());
-                if (intersects)
+                string x = sprite.Value.GetType().Name;
+                if (sprite.Value.GetGuid() != this.GetGuid() && x.Equals("HeroBullet"))
                 {
-                    _color = Color.Brown;
+                    bool intersects = this.GetSpritRectangle().Intersects(sprite.Value.GetSpritRectangle());
+                    if (intersects)
+                    {
+                        //Remove bullet that hit ship
+                        sprites.TryRemove(sprite);
+                        //Start timer for ship destroyed animation
+                        ShipHit = true;
+                        VillainShipDestroyed shiptestDestroyed = new VillainShipDestroyed(new Vector2(this._SpritePosition.X, this._SpritePosition.Y), .20, 15,Guid.NewGuid(),3.1f);
+                        SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(shiptestDestroyed);
+                        shiptestDestroyed.SyncUp();
+                    }
+
                 }
-            }    
+            }
+        }
+    }
+    private void CheckIfHitAnimationIsDone(GameTime gameTime)
+    {
+        if (ShipHit)
+        {
+            ShipHitElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (ShipHitElapsed >= ShipHitAnimationDelay)
+            {
+                ShipHit = false;
+                ShipHitElapsed = 0;
+            }
         }
     }
 }
