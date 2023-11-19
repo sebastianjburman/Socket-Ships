@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace SocketShipsClient.Sprites;
 
-public class SpaceShip : AnimatedSprite
+public class HeroShip : AnimatedSprite
 {
     private bool BulletSide;
     private float BulletSpawnDelay = .3f;
@@ -19,7 +19,7 @@ public class SpaceShip : AnimatedSprite
     private bool IsPlayer;
     private Color _color;
 
-    public SpaceShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
+    public HeroShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
     {
         this.IsPlayer = isPlayer;
     }

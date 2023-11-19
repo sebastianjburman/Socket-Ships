@@ -18,10 +18,10 @@ namespace SocketShipsClient;
         {
             this._ContentManager = contentManager;
             _Sprites = new ConcurrentDictionary<Guid, ISprite>();
-            SpaceShip spaceShiptest = new SpaceShip("HeroShip/Move", new Vector2(90, 300), .05, 6,true,Guid.NewGuid());
+            HeroShip heroShiptest = new HeroShip("HeroShip/Move", new Vector2(90, 300), .05, 6,true,Guid.NewGuid());
             VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1450, 300), .05, 6,true,Guid.NewGuid());
             _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
-            _Sprites.TryAdd(spaceShiptest.GetGuid(), spaceShiptest);
+            _Sprites.TryAdd(heroShiptest.GetGuid(), heroShiptest);
         }
 
         public static SpriteManager GetInstance(ContentManager contentManager)
@@ -68,7 +68,7 @@ namespace SocketShipsClient;
                 {
                     switch (newData.Type)
                     {
-                        case "SpaceShip":
+                        case "HeroShip":
                             _Sprites.TryGetValue(newData.GUID, out ISprite sprite);
                             sprite.SetPosition(new Vector2(newData.X, newData.Y));
                             break;
@@ -79,8 +79,8 @@ namespace SocketShipsClient;
                 {
                     switch (newData.Type)
                     {
-                        case "SpaceShip":
-                            SpaceShip newShip = new SpaceShip("HeroShip/Move", new Vector2(newData.X, newData.Y), .05,
+                        case "HeroShip":
+                            HeroShip newShip = new HeroShip("HeroShip/Move", new Vector2(newData.X, newData.Y), .05,
                                 6, false,newData.GUID);
                             SpawnSprite(newShip);
                             break;
