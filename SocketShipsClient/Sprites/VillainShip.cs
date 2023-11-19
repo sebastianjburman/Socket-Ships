@@ -19,7 +19,7 @@ public class VillainShip : AnimatedSprite
     private bool IsPlayer;
     private Color _color;
     private bool ShipHit;
-    private float ShipHitAnimationDelay = 3.1f;
+    private float ShipHitAnimationDelay = 1.5f;
     private float ShipHitElapsed;
     public VillainShip(string spriteTextureFileName, Vector2 spritePosition, double frameDuration, int frameCount,bool isPlayer,Guid spriteId) : base(spriteTextureFileName, spritePosition, frameDuration, frameCount, spriteId)
     {
@@ -91,14 +91,14 @@ public class VillainShip : AnimatedSprite
     {
         KeyboardState keyboardState = Keyboard.GetState();
         //If up key and not out of bound
-        if (keyboardState.IsKeyDown(Keys.Up) && (!(_SpritePosition.Y - (_SpriteTexture.Height / 3) <= gd.Viewport.Y)))
+        if (keyboardState.IsKeyDown(Keys.Up) && (!(_SpritePosition.Y - 20  - (_SpriteTexture.Height / 3) <= gd.Viewport.Y)))
         {
             _SpritePosition.Y -= ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
             SyncUp();
         }
         //If down key and not out of bound
-        if (keyboardState.IsKeyDown(Keys.Down) && (_SpritePosition.Y <= gd.Viewport.Height - (_SpriteTexture.Height / 3)))
+        if (keyboardState.IsKeyDown(Keys.Down) && (_SpritePosition.Y + 20 <= gd.Viewport.Height - (_SpriteTexture.Height / 3)))
         {
             _SpritePosition.Y += ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
@@ -122,7 +122,7 @@ public class VillainShip : AnimatedSprite
                         sprites.TryRemove(sprite);
                         //Start timer for ship destroyed animation
                         ShipHit = true;
-                        VillainShipDestroyed shiptestDestroyed = new VillainShipDestroyed(new Vector2(this._SpritePosition.X, this._SpritePosition.Y), .20, 15,Guid.NewGuid(),3.1f);
+                        VillainShipDestroyed shiptestDestroyed = new VillainShipDestroyed(new Vector2(this._SpritePosition.X, this._SpritePosition.Y), .10, 15,Guid.NewGuid(),1.5f);
                         SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(shiptestDestroyed);
                         shiptestDestroyed.SyncUp();
                     }

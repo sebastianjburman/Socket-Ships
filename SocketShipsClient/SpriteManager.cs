@@ -18,16 +18,20 @@ namespace SocketShipsClient;
         {
             this._ContentManager = contentManager;
             _Sprites = new ConcurrentDictionary<Guid, ISprite>();
+
+            Background background = new Background("SpaceBackground", new Vector2(0,0), new Guid());
+            _Sprites.TryAdd(background.GetGuid(), background);
+            
             Random random = new Random();
             int randomNumber = random.Next(2);
             if (randomNumber == 0)
             {
-               VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1450, 300), .05, 6,true,Guid.NewGuid());
+               VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1850, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
             }
             else
             {
-                HeroShip heroShiptest = new HeroShip("HeroShip/Move", new Vector2(90, 300), .05, 6,true,Guid.NewGuid());
+                HeroShip heroShiptest = new HeroShip("HeroShip/Move", new Vector2(100, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(heroShiptest.GetGuid(), heroShiptest); 
             }
         }
@@ -101,13 +105,13 @@ namespace SocketShipsClient;
                             SpawnSprite(villainBullet);
                             break; 
                         case "VillainShipDestroyed":
-                            VillainShipDestroyed villainShipDestroyed = new VillainShipDestroyed( new Vector2(newData.X, newData.Y), .20,
-                                15,newData.GUID,3.1f);
+                            VillainShipDestroyed villainShipDestroyed = new VillainShipDestroyed( new Vector2(newData.X, newData.Y), .10,
+                                15,newData.GUID,1.5f);
                             SpawnSprite(villainShipDestroyed);
                             break;
                         case "HeroShipDestroyed":
-                            HeroShipDestroyed heroShipDestroyed = new HeroShipDestroyed( new Vector2(newData.X, newData.Y), .20,
-                                21,newData.GUID,4.1f);
+                            HeroShipDestroyed heroShipDestroyed = new HeroShipDestroyed( new Vector2(newData.X, newData.Y), .10,
+                                21,newData.GUID,2.1f);
                             SpawnSprite(heroShipDestroyed);
                             break;
                     }
