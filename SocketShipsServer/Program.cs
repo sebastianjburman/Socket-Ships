@@ -1,26 +1,42 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using CommandLine;
+
 
 public class SocketShipServer
 {
     private static List<TcpClient> clients = new List<TcpClient>();
-    static async Task Main()
+
+    class Options
     {
-        IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-        int port = 8080;
-        TcpListener server = new TcpListener(ipAddress, port);
-        server.Start();
-        Console.WriteLine($"Server listening on port {port}");
-        while (true)
-        {
-            TcpClient client = await server.AcceptTcpClientAsync();
-            //Lock list of clients to this thread when adding
-            lock (clients)
+        [Option('i', "ip", Required = true, HelpText = "IP address")]
+        public string IpAddress { get; set; }
+
+        [Option('p', "port", Required = true, HelpText = "Port")]
+        public int Port { get; set; }
+    }
+
+    public static async Task Main(string[] args)
+    {
+        Parser.Default.ParseArguments<Options>(args)
+            .WithParsed(async options =>
             {
-                clients.Add(client);
-            }
-            AddClient(client);
-        }
+                IPAddress ipAddress = IPAddress.Parse(options.IpAddress);
+                int port = options.Port;
+                TcpListener server = new TcpListener(ipAddress, port);
+                server.Start();
+                Console.WriteLine($"Server listening on port {port}");
+                while (true)
+                {
+                    TcpClient client = await server.AcceptTcpClientAsync();
+                    // Lock list of clients to this thread when adding
+                    lock (clients)
+                    {
+                        clients.Add(client);
+                    }
+                    AddClient(client);
+                }
+            });
     }
 
     public static async Task AddClient(TcpClient client)
@@ -30,10 +46,10 @@ public class SocketShipServer
         int bytesRead;
         try
         {
-            //Read in buffer size
+            // Read in buffer size
             while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                //Broadcast message to all clients besides who send this message
+                // Broadcast message to all clients besides who sent this message
                 await BroadcastMessage(buffer, bytesRead, client);
             }
         }
@@ -41,7 +57,7 @@ public class SocketShipServer
         {
             // Handle exceptions or disconnects
         }
-        //Lock list of clients to this thread when removing
+        // Lock list of clients to this thread when removing
         lock (clients)
         {
             clients.Remove(client);
@@ -56,7 +72,7 @@ public class SocketShipServer
         {
             foreach (TcpClient client in clients)
             {
-                //Make sure to not send to who originally sent the message
+                // Make sure not to send to who originally sent the message
                 if (client != senderClient)
                 {
                     sendTasks.Add(client.GetStream().WriteAsync(buffer, 0, bytesRead));

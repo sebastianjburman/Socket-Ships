@@ -23,9 +23,11 @@ namespace SocketShipsClient;
             Background background = new Background("SpaceBackground", new Vector2(0,0), new Guid());
             _Sprites.TryAdd(background.GetGuid(), background);
             
-            Random random = new Random();
-            int randomNumber = random.Next(2);
-            if (randomNumber == 0)
+            Console.WriteLine("Select Hero or Villain Ship?");
+            Console.WriteLine("1:Hero");
+            Console.WriteLine("2:Villain");
+            int ship = Convert.ToInt32(Console.ReadLine());
+            if (ship == 2)
             {
                VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1850, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
@@ -33,9 +35,9 @@ namespace SocketShipsClient;
             }
             else
             {
-                HeroShip heroShiptest = new HeroShip("HeroShip/Move", new Vector2(100, 300), .05, 6,true,Guid.NewGuid());
-                _Sprites.TryAdd(heroShiptest.GetGuid(), heroShiptest);
-                PlayerGuid = heroShiptest.GetGuid();
+                HeroShip heroShip = new HeroShip("HeroShip/Move", new Vector2(100, 300), .05, 6,true,Guid.NewGuid());
+                _Sprites.TryAdd(heroShip.GetGuid(), heroShip);
+                PlayerGuid = heroShip.GetGuid();
             }
         }
 

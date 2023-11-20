@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Text;
 using System;
+using System.Net;
 using SocketShipsClient.Models;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,10 +14,14 @@ public static class SpriteSync
     private static NetworkStream stream;
 
     // Set these at creation of the game through --flags
-    // Default to these if no input
-    public static string IpAddress = "127.0.0.1";
-    public static int Port = 8080;
+    public static string IpAddress;
+    public static int Port;
 
+    public static void SetIPAndPort(string ip, int port)
+    {
+        IpAddress= ip;
+        Port = port;
+    }
     public static void InitializeConnection()
     {
         // Create the TcpClient and connect to the server
