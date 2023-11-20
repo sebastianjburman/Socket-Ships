@@ -78,7 +78,7 @@ public class HeroShip : AnimatedSprite
                 }
                 HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(this._SpritePosition.X + 60, bulletYAxis),Guid.NewGuid());
                 SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(heroBullet);
-                heroBullet.SyncUp();
+                heroBullet.SyncUp(false);
                 //Flip barrel
                 this.BulletSide = !BulletSide;
                 IsSpacePressed = false;
@@ -94,14 +94,14 @@ public class HeroShip : AnimatedSprite
         {
             _SpritePosition.Y -= ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
-            SyncUp();
+            SyncUp(false);
         }
         //If down key and not out of bound
         if (keyboardState.IsKeyDown(Keys.Down) && (_SpritePosition.Y +20 <= (gd.Viewport.Height) - (_SpriteTexture.Height / 3)))
         {
             _SpritePosition.Y += ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
-            SyncUp();
+            SyncUp(false);
         }
     }
 
@@ -124,7 +124,7 @@ public class HeroShip : AnimatedSprite
                         ShipHit = true;
                         HeroShipDestroyed shiptestDestroyed = new HeroShipDestroyed(new Vector2(this._SpritePosition.X, this._SpritePosition.Y), .10, 21,Guid.NewGuid(),2.1f);
                         SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(shiptestDestroyed);
-                        shiptestDestroyed.SyncUp();
+                        shiptestDestroyed.SyncUp(false);
                     }
 
                 }

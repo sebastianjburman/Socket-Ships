@@ -79,7 +79,7 @@ public class VillainShip : AnimatedSprite
                 }
                 VillainBullet villainBullet = new VillainBullet("VillainShip/VillainBullet",new Vector2(this._SpritePosition.X - 80, bulletYAxis),Guid.NewGuid());
                 SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(villainBullet);
-                villainBullet.SyncUp();
+                villainBullet.SyncUp(false);
                 //Flip barrel
                 this.BulletSide = !BulletSide;
                 IsSpacePressed = false;
@@ -95,14 +95,14 @@ public class VillainShip : AnimatedSprite
         {
             _SpritePosition.Y -= ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
-            SyncUp();
+            SyncUp(false);
         }
         //If down key and not out of bound
         if (keyboardState.IsKeyDown(Keys.Down) && (_SpritePosition.Y + 20 <= gd.Viewport.Height - (_SpriteTexture.Height / 3)))
         {
             _SpritePosition.Y += ShipSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             //Sync new position
-            SyncUp();
+            SyncUp(false);
         }
     }
     private void CheckForCollison(ConcurrentDictionary<Guid,ISprite> sprites)
@@ -124,7 +124,7 @@ public class VillainShip : AnimatedSprite
                         ShipHit = true;
                         VillainShipDestroyed shiptestDestroyed = new VillainShipDestroyed(new Vector2(this._SpritePosition.X, this._SpritePosition.Y), .10, 15,Guid.NewGuid(),1.5f);
                         SpriteManager.GetInstance(new ContentManager(new ServiceContainer())).SpawnSprite(shiptestDestroyed);
-                        shiptestDestroyed.SyncUp();
+                        shiptestDestroyed.SyncUp(false);
                     }
 
                 }

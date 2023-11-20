@@ -8,11 +8,13 @@ public class SpriteSyncModel
     public string Type { get; set; }
     public float X { get; set; }
     public float Y { get; set; }
-    public SpriteSyncModel(Guid guid, string type, float x, float y)
+    public bool RemoveSprite { get; set; }
+    public SpriteSyncModel(Guid guid, string type, float x, float y,bool removeSprite)
     {
         GUID = guid;
         Type = type;
         X = x;
         Y = y;
+        RemoveSprite = removeSprite;
     }
 }

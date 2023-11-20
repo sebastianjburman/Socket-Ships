@@ -54,4 +54,9 @@ public class SocketShips : Game
 
         base.Draw(gameTime);
     }
+    protected override void OnExiting(object sender, EventArgs args)
+    {
+        SpriteManager.GetInstance(Content).QuitGame();
+        base.OnExiting(sender, args);
+    }
 }

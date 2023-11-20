@@ -43,9 +43,9 @@ public abstract class Sprite:ISprite
       return new Rectangle((int)this._SpritePosition.X, (int)this._SpritePosition.Y, this._Sprite.Width, this._Sprite.Height);
    }
 
-   public void SyncUp()
+   public void SyncUp(bool deleteSprite)
    {
-      string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
+      string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y,deleteSprite));
       SpriteSync.SendToServer(data);
    }
    public void SetPosition(Vector2 pos)

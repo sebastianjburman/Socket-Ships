@@ -13,6 +13,7 @@ namespace SocketShipsClient;
         private static SpriteManager _Instance;
         private ConcurrentDictionary<Guid,ISprite> _Sprites;
         private ContentManager _ContentManager;
+        private Guid PlayerGuid;
 
         private SpriteManager(ContentManager contentManager)
         {
@@ -28,11 +29,13 @@ namespace SocketShipsClient;
             {
                VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1850, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
+                PlayerGuid = villainShip.GetGuid();
             }
             else
             {
                 HeroShip heroShiptest = new HeroShip("HeroShip/Move", new Vector2(100, 300), .05, 6,true,Guid.NewGuid());
-                _Sprites.TryAdd(heroShiptest.GetGuid(), heroShiptest); 
+                _Sprites.TryAdd(heroShiptest.GetGuid(), heroShiptest);
+                PlayerGuid = heroShiptest.GetGuid();
             }
         }
 
@@ -74,54 +77,66 @@ namespace SocketShipsClient;
             {
                 //Update dictionary with sprite data coming down from the server
                 SpriteSyncModel newData = await SpriteSync.ReceiveFromServer();
+                Console.WriteLine($"Reciving Message {newData.Type} + {newData.RemoveSprite}");
 
-                //Update existing sprites
-                if (_Sprites.ContainsKey(newData.GUID))
+                if (!newData.RemoveSprite)
                 {
-                    _Sprites.TryGetValue(newData.GUID, out ISprite sprite);
-                    sprite.SetPosition(new Vector2(newData.X, newData.Y));
-                }
-                //Create new sprites 
-                else
-                {
-                    switch (newData.Type)
+                    //Update existing sprites
+                    if (_Sprites.ContainsKey(newData.GUID))
                     {
-                        case "HeroShip":
-                            HeroShip newShip = new HeroShip("HeroShip/Move", new Vector2(newData.X, newData.Y), .05,
-                                6, false,newData.GUID);
-                            SpawnSprite(newShip);
-                            break;
-                        case "VillainShip":
-                            VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(newData.X, newData.Y), .05,
-                                6, false,newData.GUID);
-                            SpawnSprite(villainShip);
-                            break;
-                        case "HeroBullet":
-                            HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet", new Vector2(newData.X,newData.Y),newData.GUID);
-                            SpawnSprite(heroBullet);
-                            break; 
-                        case "VillainBullet":
-                            VillainBullet villainBullet = new VillainBullet("VillainShip/VillainBullet", new Vector2(newData.X,newData.Y),newData.GUID);
-                            SpawnSprite(villainBullet);
-                            break; 
-                        case "VillainShipDestroyed":
-                            VillainShipDestroyed villainShipDestroyed = new VillainShipDestroyed( new Vector2(newData.X, newData.Y), .10,
-                                15,newData.GUID,1.5f);
-                            SpawnSprite(villainShipDestroyed);
-                            break;
-                        case "HeroShipDestroyed":
-                            HeroShipDestroyed heroShipDestroyed = new HeroShipDestroyed( new Vector2(newData.X, newData.Y), .10,
-                                21,newData.GUID,2.1f);
-                            SpawnSprite(heroShipDestroyed);
-                            break;
+                        _Sprites.TryGetValue(newData.GUID, out ISprite sprite);
+                        sprite.SetPosition(new Vector2(newData.X, newData.Y));
                     }
+                    //Create new sprites 
+                    else
+                    {
+                        switch (newData.Type)
+                        {
+                            case "HeroShip":
+                                HeroShip newShip = new HeroShip("HeroShip/Move", new Vector2(newData.X, newData.Y), .05,
+                                    6, false, newData.GUID);
+                                SpawnSprite(newShip);
+                                break;
+                            case "VillainShip":
+                                VillainShip villainShip = new VillainShip("VillainShip/Move",
+                                    new Vector2(newData.X, newData.Y), .05,
+                                    6, false, newData.GUID);
+                                SpawnSprite(villainShip);
+                                break;
+                            case "HeroBullet":
+                                HeroBullet heroBullet = new HeroBullet("HeroShip/HeroBullet",
+                                    new Vector2(newData.X, newData.Y), newData.GUID);
+                                SpawnSprite(heroBullet);
+                                break;
+                            case "VillainBullet":
+                                VillainBullet villainBullet = new VillainBullet("VillainShip/VillainBullet",
+                                    new Vector2(newData.X, newData.Y), newData.GUID);
+                                SpawnSprite(villainBullet);
+                                break;
+                            case "VillainShipDestroyed":
+                                VillainShipDestroyed villainShipDestroyed = new VillainShipDestroyed(
+                                    new Vector2(newData.X, newData.Y), .10,
+                                    15, newData.GUID, 1.5f);
+                                SpawnSprite(villainShipDestroyed);
+                                break;
+                            case "HeroShipDestroyed":
+                                HeroShipDestroyed heroShipDestroyed = new HeroShipDestroyed(
+                                    new Vector2(newData.X, newData.Y), .10,
+                                    21, newData.GUID, 2.1f);
+                                SpawnSprite(heroShipDestroyed);
+                                break;
+                        }
+                    }
+                }
+                else if (newData.RemoveSprite)
+                {
+                    bool x = this._Sprites.TryRemove(newData.GUID, out  ISprite removeSprite);
+                    Console.WriteLine(removeSprite.GetGuid());
                 }
             }
             catch
             {
-                
             }
-
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -135,6 +150,12 @@ namespace SocketShipsClient;
         {
             sprite.LoadContent(_ContentManager);
             _Sprites.TryAdd(sprite.GetGuid(), sprite);
+        }
+
+        public void QuitGame()
+        {
+            _Sprites.TryGetValue(PlayerGuid, out ISprite player);
+            player.SyncUp(true);
         }
         
     }

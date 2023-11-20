@@ -15,4 +15,5 @@ public interface ISprite
     void SetPosition(Vector2 position);
     Guid GetGuid();
     Rectangle GetSpritRectangle();
+    void SyncUp(bool deleteSprite);
 }

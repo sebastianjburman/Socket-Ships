@@ -49,9 +49,9 @@ public abstract class AnimatedSprite:ISprite
         } 
     }
 
-    public void SyncUp()
+    public void SyncUp(bool deleteSprite)
     {
-        string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y));
+        string data = JsonSerializer.Serialize(new SpriteSyncModel(this.SpriteId, this.GetType().Name, _SpritePosition.X, _SpritePosition.Y,deleteSprite));
         SpriteSync.SendToServer(data);
     }
     public Vector2 GetPosition()
