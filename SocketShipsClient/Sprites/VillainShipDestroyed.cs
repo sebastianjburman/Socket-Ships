@@ -8,7 +8,6 @@ namespace SocketShipsClient.Sprites;
 
 public class VillainShipDestroyed : AnimatedSprite
 {
-    private bool BulletSide;
     private float ShipHitAnimationDelay;
     private float ShipHitElapsed;
 

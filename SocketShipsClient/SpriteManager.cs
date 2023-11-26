@@ -32,12 +32,14 @@ namespace SocketShipsClient;
                VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1850, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
                 PlayerGuid = villainShip.GetGuid();
+                villainShip.SyncUp(false);
             }
             else
             {
                 HeroShip heroShip = new HeroShip("HeroShip/Move", new Vector2(100, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(heroShip.GetGuid(), heroShip);
                 PlayerGuid = heroShip.GetGuid();
+                heroShip.SyncUp(false);
             }
         }
 
@@ -79,7 +81,7 @@ namespace SocketShipsClient;
             {
                 //Update dictionary with sprite data coming down from the server
                 SpriteSyncModel newData = await SpriteSync.ReceiveFromServer();
-                Console.WriteLine($"Reciving Message {newData.Type} + {newData.RemoveSprite}");
+                Console.WriteLine($"Receiving Message {newData.Type} + {newData.RemoveSprite}");
 
                 if (!newData.RemoveSprite)
                 {

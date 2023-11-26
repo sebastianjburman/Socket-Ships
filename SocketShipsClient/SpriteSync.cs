@@ -1,7 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
 using System;
-using System.Net;
 using SocketShipsClient.Models;
 using System.Text.Json;
 using System.Threading.Tasks;

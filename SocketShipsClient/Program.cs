@@ -18,10 +18,9 @@ class Program
         Parser.Default.ParseArguments<Options>(args)
             .WithParsed(options =>
             {
-                using var game = new SocketShipsClient.SocketShips();
-                
                 SpriteSync.SetIPAndPort(options.IpAddress,options.Port);
                 SpriteSync.InitializeConnection();
+                using var game = new SocketShipsClient.SocketShips();
                 game.Run();
                 SpriteSync.CloseAndDispose();
             });
