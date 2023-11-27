@@ -21,8 +21,8 @@ public class SocketShips : Game
 
     protected override void Initialize()
     {
-        _graphics.PreferredBackBufferWidth = 1920;
-        _graphics.PreferredBackBufferHeight = 1080;
+        _graphics.PreferredBackBufferWidth = 1200;
+        _graphics.PreferredBackBufferHeight = 800;
         _graphics.ApplyChanges();
         base.Initialize();
     }

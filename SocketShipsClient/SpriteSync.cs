@@ -5,69 +5,71 @@ using SocketShipsClient.Models;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SocketShipsClient;
-
-public static class SpriteSync
+namespace SocketShipsClient
 {
-    private static TcpClient client;
-    private static NetworkStream stream;
-
-    // Set these at creation of the game through --flags
-    public static string IpAddress;
-    public static int Port;
-
-    public static void SetIPAndPort(string ip, int port)
+    public static class SpriteSync
     {
-        IpAddress= ip;
-        Port = port;
-    }
-    public static void InitializeConnection()
-    {
-        // Create the TcpClient and connect to the server
-        client = new TcpClient(IpAddress, Port);
-        Console.WriteLine("Connected to server");
+        private static Socket clientSocket;
 
-        // Get the network stream
-        stream = client.GetStream();
-    }
+        // Set these at the creation of the game through --flags
+        public static string IpAddress;
+        public static int Port;
 
-    private static void CloseConnection()
-    {
-        // Close the connection
-        if (client != null)
+        public static void SetIPAndPort(string ip, int port)
         {
-            client.Close();
-            Console.WriteLine("Connection closed");
+            IpAddress = ip;
+            Port = port;
         }
-    }
 
-    public static void SendToServer(string spriteData)
-    {
-        try
+        public static void InitializeConnection()
         {
-            // Send a message to the server
-            byte[] buffer = Encoding.ASCII.GetBytes(spriteData);
-            stream.Write(buffer, 0, buffer.Length);
-            Console.WriteLine($"Sent message to server: {spriteData}");
+            // Create the Socket and connect to the server
+            clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            clientSocket.Connect(IpAddress, Port);
+            Console.WriteLine("Connected to server");
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error sending message: {ex.Message}");
-        }
-    }
-    //This is asynchronous so this won't hold up the game
-    public static async Task<SpriteSyncModel> ReceiveFromServer()
-    {
-        byte[] buffer = new byte[1024];
-        int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
-        string clientMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-        SpriteSyncModel data = JsonSerializer.Deserialize<SpriteSyncModel>(clientMessage);
-        return data;
-    }
 
-    public static void CloseAndDispose()
-    {
-        // Close the connection
-        CloseConnection();
+        private static void CloseConnection()
+        {
+            // Close the connection
+            if (clientSocket != null && clientSocket.Connected)
+            {
+                clientSocket.Shutdown(SocketShutdown.Both);
+                clientSocket.Close();
+                Console.WriteLine("Connection closed");
+            }
+        }
+
+        public static void SendToServer(string spriteData)
+        {
+            try
+            {
+                // Send a message to the server
+                byte[] buffer = Encoding.ASCII.GetBytes(spriteData);
+                clientSocket.Send(buffer);
+                Console.WriteLine($"Sent message to server: {spriteData}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending message: {ex.Message}");
+            }
+        }
+
+        public static async Task<SpriteSyncModel> ReceiveFromServer()
+        {
+            byte[] buffer = new byte[1024];
+            int bytesRead = await clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
+            
+            string clientMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+            Console.WriteLine($"Receiving Message {clientMessage}");
+            SpriteSyncModel data = JsonSerializer.Deserialize<SpriteSyncModel>(clientMessage);
+            return data;
+        }
+
+        public static void CloseAndDispose()
+        {
+            // Close the connection
+            CloseConnection();
+        }
     }
 }

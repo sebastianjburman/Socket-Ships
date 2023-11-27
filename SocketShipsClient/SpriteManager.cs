@@ -29,7 +29,7 @@ namespace SocketShipsClient;
             int ship = Convert.ToInt32(Console.ReadLine());
             if (ship == 2)
             {
-               VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1850, 300), .05, 6,true,Guid.NewGuid());
+               VillainShip villainShip = new VillainShip("VillainShip/Move", new Vector2(1130, 300), .05, 6,true,Guid.NewGuid());
                 _Sprites.TryAdd(villainShip.GetGuid(), villainShip);
                 PlayerGuid = villainShip.GetGuid();
                 villainShip.SyncUp(false);
@@ -140,6 +140,7 @@ namespace SocketShipsClient;
             }
             catch
             {
+                Console.WriteLine("Error parsing data");
             }
         }
         public void Draw(SpriteBatch spriteBatch)

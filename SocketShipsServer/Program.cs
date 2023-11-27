@@ -1,92 +1,89 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
 using CommandLine;
 using System.Text;
-
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class SocketShipServer
 {
-    private static List<TcpClient> clients = new List<TcpClient>();
+    private static List<Socket> clients = new List<Socket>();
+    
     class Options
     {
         [Option('i', "ip", Required = true, HelpText = "IP address")]
         public string? IpAddress { get; set; }
-    
+
         [Option('p', "port", Required = true, HelpText = "Port")]
         public int Port { get; set; }
     }
+
     public static async Task Main(string[] args)
     {
-        IPAddress ipAddress = IPAddress.Parse("127.0.0.1");
-        int port = 8080;
+        await Parser.Default.ParseArguments<Options>(args)
+            .WithParsedAsync(options => StartServerAsync(options.IpAddress, options.Port));
+    }
 
-        Parser.Default.ParseArguments<Options>(args)
-            .WithParsed(options =>
-            {
-                ipAddress = IPAddress.Parse(options.IpAddress);
-                port = options.Port;
-            });
-        TcpListener server = new TcpListener(ipAddress, port);
-        server.Start();
+    private static async Task StartServerAsync(string ipAddress, int port)
+    {
+        Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        serverSocket.Bind(new IPEndPoint(IPAddress.Parse(ipAddress), port));
+        serverSocket.Listen();
+
         Console.WriteLine($"Server listening on port {port}");
+
         while (true)
         {
-            TcpClient client = await server.AcceptTcpClientAsync();
-            // Lock list of clients when adding
-            lock (clients)
-            { 
-                clients.Add(client);
-            }
-            //In this method we call await stream.ReadAsync so when waiting for this we break out of this method and continue the
-            //while loop. If I await this then we wait until this method to finish
-            ProcessMessagesForClient(client);
+            Socket clientSocket = await serverSocket.AcceptAsync();
+            clients.Add(clientSocket);
+            
+            //Execution of this current method continues before ProcessMessagesForClient finishes
+            //since this method is async and we don't use await.
+            ProcessMessagesForClient(clientSocket);
         }
     }
 
-    public static async Task ProcessMessagesForClient(TcpClient client)
+    public static async Task ProcessMessagesForClient(Socket clientSocket)
     {
-        NetworkStream stream = client.GetStream();
         byte[] buffer = new byte[1024];
         int bytesRead;
+
         try
         {
             // Read in buffer size
-            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+            while ((bytesRead = await clientSocket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None)) > 0)
             {
                 string clientMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-                Console.WriteLine($"Received {clientMessage} from {((IPEndPoint)client.Client.RemoteEndPoint).Address}. Broadcasting message.");
+                Console.WriteLine($"Received {clientMessage} from {((IPEndPoint)clientSocket.RemoteEndPoint).Address}. Broadcasting message.");
+
                 // Broadcast message to all clients besides who sent this message
-                await BroadcastMessage(buffer, bytesRead, client);
+                await BroadcastMessage(buffer, bytesRead, clientSocket);
             }
         }
         catch
         {
+            Console.WriteLine("Error receiving message");
         }
-        // Lock list of clients to this thread when removing
-        lock (clients)
-        {
-            clients.Remove(client);
-        }
+
+        clients.Remove(clientSocket);
         Console.WriteLine("Closing client connection");
-        client.Close();
+        clientSocket.Close();
     }
 
-    public static async Task BroadcastMessage(byte[] buffer, int bytesRead, TcpClient senderClient)
+    public static async Task BroadcastMessage(byte[] buffer, int bytesRead, Socket senderSocket)
     {
         List<Task> sendTasks = new List<Task>();
-        lock (clients)
+
+        foreach (Socket clientSocket in clients)
         {
-            foreach (TcpClient client in clients)
+            // Make sure not to send to who originally sent the message
+            if (clientSocket != senderSocket)
             {
-                // Make sure not to send to who originally sent the message
-                if (client != senderClient)
-                {
-                    sendTasks.Add(client.GetStream().WriteAsync(buffer, 0, bytesRead));
-                }
+                sendTasks.Add(clientSocket.SendAsync(new ArraySegment<byte>(buffer, 0, bytesRead), SocketFlags.None));
             }
         }
+
         await Task.WhenAll(sendTasks);
     }
-
-    
 }
